@@ -64,6 +64,8 @@ directive
     | stringList
     | numberRanges
     | properties
+    | byteSizeArg
+    | timeDurationArg
   )*?
   ;
 
@@ -128,7 +130,7 @@ propertyList
  ;
 
 property
- : Identifier '=' ( text | number | bool )
+ : Identifier '=' ( text | number | bool | byteSizeArg | timeDurationArg )
  ;
 
 numberRanges
@@ -140,7 +142,16 @@ numberRange
  ;
 
 value
- : String | Number | Column | Bool
+ : String | Number | Column | Bool | ByteSize | TimeDuration
+ ;
+
+// New parser rules for byte size and time duration
+byteSizeArg
+ : ByteSize
+ ;
+
+timeDurationArg
+ : TimeDuration
  ;
 
 ecommand
@@ -195,7 +206,6 @@ identifierList
  : Identifier (',' Identifier)*
  ;
 
-
 /*
  * Following are the Lexer Rules used for tokenizing the recipe.
  */
@@ -247,6 +257,22 @@ BackSlash: '\\';
 Dollar   : '$';
 Tilde    : '~';
 
+// New lexer rules for byte size and time duration
+ByteSize
+ : Number WS* ByteUnit
+ ;
+
+TimeDuration
+ : Number WS* TimeUnit
+ ;
+
+fragment ByteUnit
+ : ('B'|'KB'|'MB'|'GB'|'TB'|'KIB'|'MIB'|'GIB'|'TIB')
+ ;
+
+fragment TimeUnit
+ : ('NS'|'US'|'MS'|'S'|'M'|'H'|'D')
+ ;
 
 Bool
  : 'true'
